@@ -14,16 +14,27 @@ import { XMLParser } from "fast-xml-parser";
 const app = express();
 const PORT = process.env.PORT || 3000;
 const UA = process.env.SEC_USER_AGENT || "Innermost Research research@example.com";
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "*")
+const DEFAULT_ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://innermost-gamma.vercel.app",
+  "https://innermostinvest.com",
+  "https://www.innermostinvest.com",
+];
+const CONFIGURED_ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "*")
   .split(",")
   .map(s => s.trim())
   .filter(Boolean);
-const ALLOW_ALL_ORIGINS = ALLOWED_ORIGINS.includes("*");
+const ALLOWED_ORIGINS = new Set([
+  ...DEFAULT_ALLOWED_ORIGINS,
+  ...CONFIGURED_ALLOWED_ORIGINS,
+]);
+const ALLOW_ALL_ORIGINS = ALLOWED_ORIGINS.has("*");
 const HAS_REAL_SEC_CONTACT = Boolean(process.env.SEC_USER_AGENT && /\S+@\S+\.\S+/.test(process.env.SEC_USER_AGENT));
 
 app.use(cors({
   origin(origin, cb) {
-    if (!origin || ALLOW_ALL_ORIGINS || ALLOWED_ORIGINS.includes(origin)) {
+    if (!origin || ALLOW_ALL_ORIGINS || ALLOWED_ORIGINS.has(origin)) {
       cb(null, true);
       return;
     }
