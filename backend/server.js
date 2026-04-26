@@ -552,8 +552,8 @@ app.get("/api/refresh", (_, res) => {
   res.json({ ok: true, cleared: true });
 });
 
-app.listen(PORT, () => {
-  console.log(`✦ innermost-backend listening on :${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✦ innermost-backend listening on 0.0.0.0:${PORT}`);
   console.log(`  SEC User-Agent: ${UA}`);
   if (!HAS_REAL_SEC_CONTACT) {
     console.warn("  Set SEC_USER_AGENT to a real name and email before requesting SEC data.");
