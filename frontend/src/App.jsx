@@ -600,26 +600,26 @@ function Tracker({ funds, status, retry, onAnyError }) {
 
 function PickRow({ pick }) {
   return (
-    <div className="border rounded-lg p-4 transition hover:-translate-y-0.5"
+    <div className="border rounded-lg p-4 sm:p-5 transition hover:-translate-y-0.5"
       style={{ borderColor: pick.featuredHolds ? "rgba(212, 165, 68, 0.4)" : "var(--border)",
         backgroundColor: "var(--card)" }}>
-      <div className="flex items-start justify-between gap-3 mb-2">
-        <div className="flex items-baseline gap-3 min-w-0">
-          <div className="text-base font-semibold flex-shrink-0" style={{ color: "var(--accent)", letterSpacing: 0 }}>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 min-w-0">
+          <div className="text-lg font-bold flex-shrink-0" style={{ color: "var(--accent)", letterSpacing: 0 }}>
             {pick.ticker}
           </div>
-          <div className="text-sm sm:text-[15px] truncate" style={{ color: "var(--fg)" }}>{pick.issuer}</div>
+          <div className="text-base truncate" style={{ color: "var(--fg)" }}>{pick.issuer}</div>
         </div>
         {pick.featuredHolds && <Award size={14} style={{ color: "var(--accent)", flexShrink: 0 }} />}
       </div>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"
+      <div className="grid sm:flex sm:flex-wrap items-center gap-x-4 gap-y-1 text-sm"
         style={{ color: "var(--muted)" }}>
         <span>{fmtUsd(pick.totalValueUsd)} total</span>
         <span>{pick.fundCount} funds</span>
         <span style={{ color: "var(--accent)", fontWeight: 600 }}>Conviction {pick.convictionScore.toFixed(1)}</span>
         {pick.featuredHolds && <span style={{ color: "var(--accent)", fontWeight: 600 }}>SA holds</span>}
       </div>
-      <div className="mt-2 text-xs truncate" style={{ color: "var(--muted)" }}>
+      <div className="mt-2 text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
         {pick.fundsHolding.slice(0, 4).map(f => f.name.replace(/ (Capital|Management|LP|LLC|Advisors).*$/i, "")).join(" · ")}
         {pick.fundsHolding.length > 4 && ` +${pick.fundsHolding.length - 4}`}
       </div>
@@ -912,25 +912,37 @@ export default function App() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap');
         :root {
           --bg: #090b0f;
-          --fg: #ece8de;
+          --fg: #f5f1e8;
           --accent: #f2b84b;
-          --card: #12161d;
-          --border: #2a3340;
-          --muted: #8a93a2;
+          --card: #151a22;
+          --border: #3a4656;
+          --muted: #b2bac7;
           --success: #6dd18a;
           --danger: #ef7d7d;
         }
-        * { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        .i-serif { font-family: 'Instrument Serif', ui-serif, Georgia, serif; font-weight: 400; }
+        * { font-family: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        html { font-size: 17px; }
+        .i-serif {
+          font-family: 'Source Serif 4', ui-serif, Georgia, serif;
+          font-weight: 600;
+          letter-spacing: 0;
+        }
         .i-mono {
-          font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-family: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           letter-spacing: 0 !important;
         }
         code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-        body { background: #090b0f; color: #ece8de; }
+        body { background: #090b0f; color: #f5f1e8; line-height: 1.6; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+        p { line-height: 1.7; }
+        button { min-height: 40px; }
+        .text-\\[9px\\] { font-size: 0.75rem !important; }
+        .text-\\[10px\\] { font-size: 0.8125rem !important; }
+        .text-\\[11px\\] { font-size: 0.875rem !important; }
+        .text-xs { font-size: 0.875rem !important; }
+        .text-sm { font-size: 0.9375rem !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
         .animate-in { animation: fadeIn 0.25s ease-out; }
         ::selection { background: #f2b84b; color: #090b0f; }
