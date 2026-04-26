@@ -3,6 +3,7 @@ import {
   Zap, Layers, Factory, ExternalLink, Send, Loader2,
   ArrowRight, Atom, Target, AlertTriangle,
   TrendingUp, Award, Server, ChevronDown, ChevronRight,
+  Compass, BookOpen, Search, MessageCircle, CheckCircle2,
 } from "lucide-react";
 
 // ============================================================================
@@ -172,6 +173,7 @@ function BackendBanner({ status, onRetry }) {
 
 function Header({ view, setView, status }) {
   const tabs = [
+    { id: "start",     label: "Start Here" },
     { id: "dashboard", label: "Loop" },
     { id: "tracker",   label: "Smart Money" },
     { id: "picks",     label: "Picks" },
@@ -204,6 +206,153 @@ function Header({ view, setView, status }) {
         </nav>
       </div>
     </header>
+  );
+}
+
+// ============================================================================
+// START HERE — investor-friendly onboarding
+// ============================================================================
+
+function StartAction({ icon: Icon, title, body, action, onClick }) {
+  return (
+    <button onClick={onClick}
+      className="text-left border rounded-lg p-4 sm:p-5 transition hover:-translate-y-0.5"
+      style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}>
+      <div className="flex items-start gap-3">
+        <Icon size={18} style={{ color: "var(--accent)", flexShrink: 0, marginTop: 2 }} />
+        <div>
+          <div className="text-base font-medium mb-1" style={{ color: "var(--fg)" }}>{title}</div>
+          <p className="text-sm leading-relaxed mb-3" style={{ color: "var(--muted)" }}>{body}</p>
+          <div className="i-mono text-[10px] tracking-[0.16em] uppercase inline-flex items-center gap-2"
+            style={{ color: "var(--accent)" }}>
+            {action} <ArrowRight size={11} />
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function StartHere({ setView, goToAdvisor }) {
+  const terms = [
+    ["Innermost loop", "A map of who gets paid first if AI keeps scaling. Closer to the center means more direct exposure to compute, chips, power, and infrastructure."],
+    ["13F filing", "A quarterly SEC filing that shows many large funds' long US stock positions. Useful, but delayed and incomplete."],
+    ["On-loop", "A holding that maps to one of the AI buildout rings. Off-loop names may still be good businesses, just less direct to this thesis."],
+    ["Conviction score", "A ranking signal that combines dollars held, number of funds holding the name, and whether the Situational Awareness fund owns it."],
+  ];
+
+  const steps = [
+    ["1", "Learn the map", "Use the Loop tab to see why chips, fabs, power, infrastructure, apps, and adjacent pivots are separated."],
+    ["2", "Inspect the evidence", "Use Smart Money to see real 13F holdings by fund, including position size and ring classification."],
+    ["3", "Look for agreement", "Use Picks to find names where several AI-focused funds appear to cluster."],
+    ["4", "Ask a plain-English question", "Use Advisor to translate a ticker, sector, or thesis into the framework."],
+  ];
+
+  return (
+    <div className="max-w-6xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+      <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-14 items-center mb-14">
+        <div>
+          <div className="i-mono text-[11px] tracking-[0.3em] mb-5" style={{ color: "var(--accent)" }}>
+            START HERE · INVESTOR ORIENTATION
+          </div>
+          <h1 className="i-serif text-4xl sm:text-5xl md:text-7xl leading-[0.95] mb-7" style={{ color: "var(--fg)" }}>
+            AI investing,<br />without the jargon.
+          </h1>
+          <p className="max-w-2xl text-base sm:text-lg leading-relaxed mb-5" style={{ color: "var(--muted)" }}>
+            Innermost is a research tool for understanding which public companies sit closest to the AI buildout. It does not tell you what to buy. It helps you ask sharper questions about exposure, evidence, and risk.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setView("dashboard")}
+              className="i-mono text-[11px] tracking-[0.14em] uppercase px-4 py-2 rounded-md inline-flex items-center gap-2"
+              style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}>
+              Learn the loop <ArrowRight size={13} />
+            </button>
+            <button onClick={() => goToAdvisor("Explain the innermost loop framework for a serious investor who is new to AI infrastructure. Keep it plain-English and use one example from each ring.")}
+              className="i-mono text-[11px] tracking-[0.14em] uppercase px-4 py-2 rounded-md inline-flex items-center gap-2"
+              style={{ color: "var(--fg)", border: "1px solid var(--border)" }}>
+              Ask Advisor <MessageCircle size={13} />
+            </button>
+          </div>
+        </div>
+        <div className="border rounded-lg p-5 sm:p-6" style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}>
+          <div className="flex items-center gap-3 mb-5">
+            <Compass size={18} style={{ color: "var(--accent)" }} />
+            <div className="i-mono text-[11px] tracking-[0.22em]" style={{ color: "var(--accent)" }}>
+              THE BASIC IDEA
+            </div>
+          </div>
+          <p className="text-lg leading-relaxed mb-5" style={{ color: "var(--fg)" }}>
+            If AI demand rises, capital tends to flow first toward the scarce inputs: advanced chips, the factories that make them, power, data centers, networking, and then the applications built on top.
+          </p>
+          <div className="space-y-3">
+            {LOOP.slice(0, 5).map(layer => {
+              const Icon = layer.icon;
+              return (
+                <div key={layer.code} className="flex items-center gap-3">
+                  <Icon size={14} style={{ color: layer.color, flexShrink: 0 }} />
+                  <div className="i-mono text-[10px] tracking-[0.14em]" style={{ color: "var(--muted)", width: 34 }}>
+                    {layer.code}
+                  </div>
+                  <div className="text-sm" style={{ color: "var(--fg)" }}>{layer.label}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 mb-14">
+        {terms.map(([term, definition]) => (
+          <div key={term} className="border rounded-lg p-4" style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}>
+            <div className="i-mono text-[10px] tracking-[0.18em] uppercase mb-2" style={{ color: "var(--accent)" }}>
+              {term}
+            </div>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{definition}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mb-14">
+        <div className="i-mono text-[11px] tracking-[0.3em] mb-4" style={{ color: "var(--muted)" }}>
+          YOUR FIRST 10 MINUTES
+        </div>
+        <div className="grid md:grid-cols-2 gap-3">
+          {steps.map(([num, title, body]) => (
+            <div key={num} className="border rounded-lg p-4 sm:p-5 flex gap-4"
+              style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}>
+              <div className="i-mono text-sm flex items-center justify-center rounded-full flex-shrink-0"
+                style={{ color: "var(--bg)", backgroundColor: "var(--accent)", width: 28, height: 28 }}>
+                {num}
+              </div>
+              <div>
+                <div className="text-base font-medium mb-1" style={{ color: "var(--fg)" }}>{title}</div>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-3 mb-10">
+        <StartAction icon={BookOpen} title="Understand the framework"
+          body="See the six rings and the investment logic behind each one."
+          action="Open Loop" onClick={() => setView("dashboard")} />
+        <StartAction icon={Search} title="Check what funds own"
+          body="Review live 13F filings from the curated AI-heavy fund set."
+          action="Open Smart Money" onClick={() => setView("tracker")} />
+        <StartAction icon={TrendingUp} title="Find clustered conviction"
+          body="Compare where multiple funds appear to agree by ring."
+          action="Open Picks" onClick={() => setView("picks")} />
+      </div>
+
+      <div className="p-4 border rounded-lg flex items-start gap-3"
+        style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}>
+        <CheckCircle2 size={15} style={{ color: "var(--success)", flexShrink: 0, marginTop: 2 }} />
+        <div className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
+          A good first question for any company: is this business selling a scarce input into AI, using AI to improve an existing product, or simply benefiting from AI market enthusiasm?
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -591,10 +740,10 @@ function Advisor({ prefilledQuestion, clearPrefilled, picks }) {
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
 
   const suggestions = [
+    "Explain this framework to me as an investor who is new to AI infrastructure.",
     "Based on live conviction, what are the highest-signal picks in each ring right now?",
     "Where does Bloom Energy sit on the loop and why is it SA's top position?",
     "Is Palantir a real AI play or mostly narrative?",
-    "What's the innermost variant of a generic 'AI ETF'?",
   ];
 
   const send = async (text) => {
@@ -709,7 +858,7 @@ function Advisor({ prefilledQuestion, clearPrefilled, picks }) {
 // ============================================================================
 
 export default function App() {
-  const [view, setView] = useState("dashboard");
+  const [view, setView] = useState("start");
   const [prefilledQuestion, setPrefilledQuestion] = useState(null);
 
   const [funds, setFunds] = useState([]);
@@ -785,6 +934,7 @@ export default function App() {
       <div className="min-h-screen" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
         <Header view={view} setView={setView} status={status} />
 
+        {view === "start"     && <StartHere setView={setView} goToAdvisor={goToAdvisor} />}
         {view === "dashboard" && <Dashboard goToAdvisor={goToAdvisor} />}
         {view === "tracker"   && <Tracker funds={funds} status={status} retry={loadFunds} onAnyError={() => {}} />}
         {view === "picks"     && <PicksTab status={status} retry={retryPicks}
