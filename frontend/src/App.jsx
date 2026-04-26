@@ -603,23 +603,23 @@ function PickRow({ pick }) {
     <div className="border rounded-lg p-4 transition hover:-translate-y-0.5"
       style={{ borderColor: pick.featuredHolds ? "rgba(212, 165, 68, 0.4)" : "var(--border)",
         backgroundColor: "var(--card)" }}>
-      <div className="flex items-baseline justify-between gap-3 mb-2">
+      <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex items-baseline gap-3 min-w-0">
-          <div className="i-mono text-lg font-semibold flex-shrink-0" style={{ color: "var(--accent)" }}>
+          <div className="text-base font-semibold flex-shrink-0" style={{ color: "var(--accent)", letterSpacing: 0 }}>
             {pick.ticker}
           </div>
-          <div className="text-sm truncate" style={{ color: "var(--fg)" }}>{pick.issuer}</div>
+          <div className="text-sm sm:text-[15px] truncate" style={{ color: "var(--fg)" }}>{pick.issuer}</div>
         </div>
         {pick.featuredHolds && <Award size={14} style={{ color: "var(--accent)", flexShrink: 0 }} />}
       </div>
-      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 i-mono text-[10px] tracking-[0.15em] uppercase"
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"
         style={{ color: "var(--muted)" }}>
         <span>{fmtUsd(pick.totalValueUsd)} total</span>
         <span>{pick.fundCount} funds</span>
-        <span style={{ color: "var(--accent)" }}>conviction {pick.convictionScore.toFixed(1)}</span>
-        {pick.featuredHolds && <span style={{ color: "var(--accent)" }}>· SA holds</span>}
+        <span style={{ color: "var(--accent)", fontWeight: 600 }}>Conviction {pick.convictionScore.toFixed(1)}</span>
+        {pick.featuredHolds && <span style={{ color: "var(--accent)", fontWeight: 600 }}>SA holds</span>}
       </div>
-      <div className="mt-2 i-mono text-[10px] tracking-wide truncate" style={{ color: "var(--muted)" }}>
+      <div className="mt-2 text-xs truncate" style={{ color: "var(--muted)" }}>
         {pick.fundsHolding.slice(0, 4).map(f => f.name.replace(/ (Capital|Management|LP|LLC|Advisors).*$/i, "")).join(" · ")}
         {pick.fundsHolding.length > 4 && ` +${pick.fundsHolding.length - 4}`}
       </div>
@@ -912,7 +912,7 @@ export default function App() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
         :root {
           --bg: #090b0f;
           --fg: #ece8de;
@@ -923,9 +923,13 @@ export default function App() {
           --success: #6dd18a;
           --danger: #ef7d7d;
         }
-        * { font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; }
+        * { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         .i-serif { font-family: 'Instrument Serif', ui-serif, Georgia, serif; font-weight: 400; }
-        .i-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+        .i-mono {
+          font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          letter-spacing: 0 !important;
+        }
+        code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
         body { background: #090b0f; color: #ece8de; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
         .animate-in { animation: fadeIn 0.25s ease-out; }
