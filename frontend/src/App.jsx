@@ -5,6 +5,8 @@ import {
   TrendingUp, Award, Server, ChevronDown, ChevronRight,
   Compass, BookOpen, Search, MessageCircle, CheckCircle2,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // ============================================================================
 // CONFIG — backend URL comes from Vite env var
@@ -705,23 +707,141 @@ function PicksTab({ status, retry, picks, picksLoading, picksErr }) {
 // ADVISOR — chat with backend proxy (which forwards to Anthropic with system prompt)
 // ============================================================================
 
+function fmtChartValue(v) {
+  const n = Number(v);
+  if (!isFinite(n)) return String(v ?? "");
+  const a = Math.abs(n);
+  if (a >= 1e9) return (n / 1e9).toFixed(1) + "B";
+  if (a >= 1e6) return (n / 1e6).toFixed(1) + "M";
+  if (a >= 1e3) return (n / 1e3).toFixed(1) + "K";
+  return n.toFixed(n % 1 ? 1 : 0);
+}
+
+function ChartBlock({ spec }) {
+  const data = Array.isArray(spec?.data) ? spec.data.filter(d => d && d.label != null) : [];
+  if (!data.length) return null;
+  const values = data.map(d => Number(d.value) || 0);
+  const max = Math.max(...values, 0) || 1;
+  const min = Math.min(...values, 0);
+  const range = max - Math.min(min, 0) || 1;
+  const prefix = spec.prefix || "";
+  const suffix = spec.suffix || spec.unit || "";
+  const title = spec.title || "";
+  return (
+    <div className="my-5 p-4 border rounded-lg"
+      style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}>
+      {title && (
+        <div className="i-mono text-[10px] tracking-[0.25em] mb-3 uppercase break-words"
+          style={{ color: "var(--accent)" }}>
+          {title}
+        </div>
+      )}
+      <div className="space-y-2">
+        {data.map((d, i) => {
+          const v = Number(d.value) || 0;
+          const pct = ((v - Math.min(min, 0)) / range) * 100;
+          return (
+            <div key={i} className="flex items-center gap-3 text-xs">
+              <div className="i-mono uppercase truncate w-20 sm:w-28 flex-shrink-0"
+                style={{ color: "var(--muted)" }}>
+                {d.label}
+              </div>
+              <div className="flex-1 h-5 rounded overflow-hidden min-w-0"
+                style={{ backgroundColor: "rgba(255,255,255,0.04)" }}>
+                <div className="h-full transition-all"
+                  style={{ width: `${Math.max(pct, 1)}%`, backgroundColor: "var(--accent)" }} />
+              </div>
+              <div className="i-mono tabular-nums w-16 text-right flex-shrink-0"
+                style={{ color: "var(--fg)" }}>
+                {prefix}{fmtChartValue(v)}{suffix}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const MARKDOWN_COMPONENTS = {
+  h1: (p) => <h1 className="i-serif text-2xl mt-5 mb-3 break-words" {...p} />,
+  h2: (p) => <h2 className="i-serif text-xl mt-5 mb-2 break-words" {...p} />,
+  h3: (p) => <h3 className="i-mono text-[11px] tracking-[0.25em] uppercase mt-4 mb-2 break-words" style={{ color: "var(--accent)" }} {...p} />,
+  h4: (p) => <h4 className="i-mono text-[11px] tracking-[0.2em] uppercase mt-3 mb-2 break-words" style={{ color: "var(--muted)" }} {...p} />,
+  p: (p) => <p className="mb-3" {...p} />,
+  strong: (p) => <strong style={{ color: "var(--accent)" }} {...p} />,
+  em: (p) => <em className="italic" {...p} />,
+  ul: (p) => <ul className="list-disc pl-5 mb-3 space-y-1" {...p} />,
+  ol: (p) => <ol className="list-decimal pl-5 mb-3 space-y-1" {...p} />,
+  li: (p) => <li className="leading-relaxed" {...p} />,
+  a: (p) => <a className="underline break-all" style={{ color: "var(--accent)" }} target="_blank" rel="noopener noreferrer" {...p} />,
+  blockquote: (p) => <blockquote className="border-l-2 pl-3 my-3 italic" style={{ borderColor: "var(--accent)", color: "var(--muted)" }} {...p} />,
+  hr: () => <hr className="my-4" style={{ borderColor: "var(--border)" }} />,
+  table: (p) => (
+    <div className="my-3 overflow-x-auto -mx-1">
+      <table className="w-full text-xs border-collapse" {...p} />
+    </div>
+  ),
+  tr: (p) => <tr className="border-b" style={{ borderColor: "var(--border)" }} {...p} />,
+  th: (p) => <th className="i-mono text-[10px] tracking-[0.18em] uppercase text-left p-2 align-bottom" style={{ color: "var(--muted)" }} {...p} />,
+  td: (p) => <td className="p-2 align-top" {...p} />,
+  pre: ({ children }) => <>{children}</>,
+  code: ({ className, children, ...rest }) => {
+    const match = /language-(\w+)/.exec(className || "");
+    const lang = match?.[1];
+    const text = String(children).replace(/\n$/, "");
+    const isBlock = !!lang || text.includes("\n");
+    if (isBlock && lang === "chart") {
+      try {
+        return <ChartBlock spec={JSON.parse(text)} />;
+      } catch {
+        // fall through to code rendering
+      }
+    }
+    if (!isBlock) {
+      return (
+        <code className="px-1 py-0.5 rounded text-[0.85em] break-words"
+          style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "var(--accent)" }} {...rest}>
+          {children}
+        </code>
+      );
+    }
+    return (
+      <pre className="my-3 p-3 rounded text-xs overflow-x-auto"
+        style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
+        <code className={className} {...rest}>{children}</code>
+      </pre>
+    );
+  },
+};
+
+function MarkdownContent({ content }) {
+  return (
+    <div className="text-sm leading-relaxed break-words" style={{ color: "var(--fg)", overflowWrap: "anywhere" }}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
+}
+
 function Message({ role, content }) {
   if (role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-2xl px-4 py-3 rounded-lg text-sm leading-relaxed"
-          style={{ backgroundColor: "var(--accent)", color: "var(--bg)" }}>
+        <div className="max-w-2xl px-4 py-3 rounded-lg text-sm leading-relaxed break-words"
+          style={{ backgroundColor: "var(--accent)", color: "var(--bg)", overflowWrap: "anywhere" }}>
           {content}
         </div>
       </div>
     );
   }
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-3xl min-w-0">
       <div className="i-mono text-[10px] tracking-[0.3em] mb-2" style={{ color: "var(--accent)" }}>
         THE ADVISOR
       </div>
-      <div className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "var(--fg)" }}>{content}</div>
+      <MarkdownContent content={content} />
     </div>
   );
 }
