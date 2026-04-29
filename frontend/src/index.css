@@ -5,3 +5,7 @@
 html, body, #root { height: 100%; }
 html, body { overflow-x: hidden; max-width: 100%; }
 body { margin: 0; background: #090b0f; color: #ece8de; }
+
+.advisor-input::placeholder { color: var(--muted); opacity: 1; font-style: normal; }
+.advisor-input::-webkit-input-placeholder { color: var(--muted); opacity: 1; }
+.advisor-input:-ms-input-placeholder { color: var(--muted); opacity: 1; }

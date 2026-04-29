@@ -954,7 +954,9 @@ function Advisor({ prefilledQuestion, clearPrefilled, picks }) {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === "Enter" && send()}
             placeholder="Ask about a company, sector, or strategy…"
-            className="flex-1 bg-transparent outline-none px-3 py-2 text-sm"
+            autoComplete="off"
+            spellCheck="false"
+            className="advisor-input flex-1 bg-transparent outline-none px-3 py-2 text-sm placeholder:text-[color:var(--muted)] placeholder:opacity-100 placeholder:font-normal"
             style={{ color: "var(--fg)" }} />
           <button onClick={() => send()} disabled={!input.trim() || loading}
             aria-label="Send message"
