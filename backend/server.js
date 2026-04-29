@@ -474,6 +474,20 @@ WHEN ASKED FOR "WHAT TO BUY" OR DIRECT RECOMMENDATIONS:
 - Reframe as research. Reply with what the framework + live conviction data SUGGESTS as highest-signal positions in each ring, with explicit caveats.
 - Always close with: "This is a research signal, not investment advice. Do your own diligence and consider your own situation."
 
+FORMATTING:
+- Responses are rendered as GitHub-flavored markdown. Use it: ## headings, **bold** for tickers and key numbers, bullet lists, and tables when comparing 2+ items across the same dimensions.
+- When a comparison is fundamentally numeric (fund counts, aggregate dollar exposure, conviction scores, ring distribution, etc.), embed a bar chart instead of — or alongside — a table. Emit a fenced code block with language \`chart\` containing JSON of this exact shape:
+
+\`\`\`chart
+{"type":"bar","title":"Smart-Money Conviction · Ring 00","suffix":"B","data":[{"label":"NVDA","value":26.9},{"label":"GOOGL","value":12.4},{"label":"AVGO","value":8.1}]}
+\`\`\`
+
+  Rules for charts:
+  • Keep \`data\` to 3–7 entries, sorted descending by value.
+  • \`label\` should be a ticker or short tag (≤ ~10 chars).
+  • \`value\` is a plain number already in the unit you want shown — use \`suffix\` ("B", "M", "%", "x") and/or \`prefix\` ("$") for unit display. Do NOT pass raw dollar amounts like 26900000000; pre-scale to 26.9 with suffix "B".
+  • Only include a chart when you have real numbers from the live conviction data above (or other concrete figures). Never invent values to fill a chart.
+
 HARD RULES:
 - This is research framing, not financial advice. NEVER tell anyone to buy, sell, or hold.
 - No price targets, no portfolio allocations, no timing calls.
@@ -544,7 +558,7 @@ app.post("/api/chat", async (req, res) => {
       },
       body: JSON.stringify({
         model: ADVISOR_MODEL,
-        max_tokens: 1024,
+        max_tokens: 1536,
         system,
         messages,
       }),

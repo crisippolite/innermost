@@ -3,4 +3,5 @@
 @tailwind utilities;
 
 html, body, #root { height: 100%; }
+html, body { overflow-x: hidden; max-width: 100%; }
 body { margin: 0; background: #090b0f; color: #ece8de; }
